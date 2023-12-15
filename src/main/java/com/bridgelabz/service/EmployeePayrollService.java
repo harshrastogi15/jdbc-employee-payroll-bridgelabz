@@ -18,4 +18,27 @@ public class EmployeePayrollService {
         }
         return this.employeeDataList;
     }
+
+    public void updateSalary(String name, int salary) throws DatabaseException {
+        int result = new EmployeeServiceDB().updateSalaryData(name,salary);
+        if(result == 0){
+            return ;
+        }
+        Employee employeeData = this.getEmployeePayrollData(name);
+        if(employeeData != null) employeeData.salary = salary;
+    }
+    public boolean checkEmployeePayrollIsSync(String name) throws DatabaseException {
+        List<Employee> employeeDataList = new EmployeeServiceDB().getEmployeeData(name);
+        return employeeDataList.get(0).equals((getEmployeePayrollData(name)));
+    }
+
+
+    private Employee getEmployeePayrollData(String name) {
+        return this.employeeDataList.stream()
+                .filter(employeeData -> employeeData.name.equals(name))
+                .findFirst()
+                .orElse(null);
+
+    }
+
 }

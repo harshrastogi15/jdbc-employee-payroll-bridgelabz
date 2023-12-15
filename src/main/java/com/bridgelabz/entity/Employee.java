@@ -16,4 +16,13 @@ public class Employee {
         this.startDate = startDate;
     }
 
+
+    @Override
+    public boolean equals(Object o){
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+        Employee that = (Employee) o;
+        return id == that.id && Integer.compare(salary,that.salary)==0 && name.equals(that.name);
+    }
+
 }
