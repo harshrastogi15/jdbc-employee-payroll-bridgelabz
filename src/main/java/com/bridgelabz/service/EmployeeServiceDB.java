@@ -121,6 +121,27 @@ public class EmployeeServiceDB {
         }
     }
 
+
+    /*
+     * Read Data from database in range
+     */
+    public List<Employee> readDataInRange(String date1, String date2) throws DatabaseException{
+        try {
+            String sqlQuery = String.format("Select * From employee_payroll Where startDate BETWEEN CAST('%s' AS Date) and CAST('%s' AS Date);", date1,date2);
+            List<Employee> employeeDataList = new ArrayList<>();
+
+            Connection connection = this.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(sqlQuery);
+
+            employeeDataList = this.getEmployeeDataPopulate(result);
+            connection.close();
+            return employeeDataList;
+        } catch (SQLException e) {
+            throw new DatabaseException("Read Data In Range : " + e.getMessage());
+        }
+    }
+
     private void prepareStatementForEmployeeData() throws DatabaseException {
         try{
             Connection connection = this.getConnection();

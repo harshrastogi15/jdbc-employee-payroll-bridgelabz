@@ -3,7 +3,6 @@ package com.bridgelabz.service;
 import com.bridgelabz.entity.Employee;
 import com.bridgelabz.exception.DatabaseException;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class EmployeePayrollService {
@@ -30,10 +29,20 @@ public class EmployeePayrollService {
         Employee employeeData = this.getEmployeePayrollData(name);
         if(employeeData != null) employeeData.salary = salary;
     }
+
     public boolean checkEmployeePayrollIsSync(String name) throws DatabaseException {
         List<Employee> employeeDataList = employeeServiceDb.getEmployeeData(name);
         return employeeDataList.get(0).equals((getEmployeePayrollData(name)));
     }
+
+    public List<Employee> readFromDataBaseWithParticularRange(IOService ioService, String date1, String date2) throws DatabaseException{
+        List<Employee> employeeWithRange =null;
+        if(ioService.equals(IOService.DB_IO)){
+            employeeWithRange = employeeServiceDb.readDataInRange(date1,date2);
+        }
+        return employeeWithRange;
+    }
+
 
 
     private Employee getEmployeePayrollData(String name) {

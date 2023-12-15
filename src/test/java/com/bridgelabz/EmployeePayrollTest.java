@@ -39,7 +39,7 @@ public class EmployeePayrollTest {
 
             EmployeePayrollService employeePayrollService = new EmployeePayrollService();
             List<Employee> employeeDataList = employeePayrollService.readFromDataBase(EmployeePayrollService.IOService.DB_IO);
-            employeePayrollService.updateSalary("Alice",300000);
+            employeePayrollService.updateSalary("Alice",200000);
             boolean result = employeePayrollService.checkEmployeePayrollIsSync("Alice");
             System.out.println(result);
             Assert.assertTrue(result);
@@ -48,4 +48,14 @@ public class EmployeePayrollTest {
         }
     }
 
+    @Test
+    public void retrieveEmployeesWhoHaveJoined_ParticularDataRange(){
+        try {
+            EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+            List<Employee> employeeDataList = employeePayrollService.readFromDataBaseWithParticularRange(EmployeePayrollService.IOService.DB_IO,"2022-01-01","2024-01-01");
+            Assert.assertEquals(1,employeeDataList.size());
+        }catch (DatabaseException e){
+            System.out.println(e.getMessage());
+        }
+    }
 }
