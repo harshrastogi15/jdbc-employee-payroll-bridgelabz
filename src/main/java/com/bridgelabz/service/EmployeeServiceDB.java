@@ -171,6 +171,27 @@ public class EmployeeServiceDB {
         }
     }
 
+
+    public Employee addEmployeeToDB(String name, int salary, LocalDate date, String gender) throws DatabaseException{
+        try {
+            int employeeID = -1;
+            Employee employee = null;
+            String sql = String.format("INSERT INTO employee_payroll (name,salary,startDate,gender) values " +
+                                        "('%s','%s','%s','%s');",name,salary,Date.valueOf(date),gender);
+            Connection connection = this.getConnection();
+            Statement statement = connection.createStatement();
+            int rowAffected = statement.executeUpdate(sql,statement.RETURN_GENERATED_KEYS);
+            if(rowAffected == 1){
+                ResultSet resultSet = statement.getGeneratedKeys();
+                if(resultSet.next()) employeeID = resultSet.getInt(1);
+            }
+            employee = new Employee(employeeID,name,salary,date);
+            return employee;
+        }catch (SQLException e) {
+            throw new DatabaseException("Add Employee To DB Error : " + e.getMessage());
+        }
+    }
+
     private void prepareStatementForEmployeeData() throws DatabaseException {
         try{
             Connection connection = this.getConnection();

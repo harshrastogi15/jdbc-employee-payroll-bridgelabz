@@ -3,6 +3,7 @@ package com.bridgelabz.service;
 import com.bridgelabz.entity.Employee;
 import com.bridgelabz.exception.DatabaseException;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
@@ -50,6 +51,11 @@ public class EmployeePayrollService {
         HashMap<String,Integer> data = null;
         data = employeeServiceDb.readDataMinMaxAverage(gender);
         return data;
+    }
+
+
+    public void addEmployee(String name, int salary, LocalDate date, String gender) throws DatabaseException {
+        employeeDataList.add(employeeServiceDb.addEmployeeToDB(name,salary,date,gender));
     }
 
 

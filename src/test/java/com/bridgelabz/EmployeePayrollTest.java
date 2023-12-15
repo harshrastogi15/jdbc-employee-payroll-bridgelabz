@@ -8,6 +8,7 @@ import com.bridgelabz.service.EmployeeServiceDB;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,4 +75,19 @@ public class EmployeePayrollTest {
             System.out.println(e.getMessage());
         }
     }
+
+    @Test
+    public void giverNewEmployee_Added_ShouldSyncDB(){
+        try {
+            EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+            List<Employee> employeeDataList = employeePayrollService.readFromDataBase(EmployeePayrollService.IOService.DB_IO);
+            employeePayrollService.addEmployee("Mark",500000, LocalDate.now(),"M");
+            boolean result = employeePayrollService.checkEmployeePayrollIsSync("Mark");
+            Assert.assertTrue(result);
+        } catch (DatabaseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }
