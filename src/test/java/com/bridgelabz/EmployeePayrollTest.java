@@ -15,7 +15,7 @@ public class EmployeePayrollTest {
     @Test
     public void payrollServiceDatabase_ConnectDatabase(){
         try {
-            boolean checkConnection = new EmployeeServiceDB().checkConnectionToDB();
+            boolean checkConnection = EmployeeServiceDB.getInstance().checkConnectionToDB();
             Assert.assertTrue(checkConnection);
         } catch (DatabaseException e) {
             System.out.println(e.getMessage());

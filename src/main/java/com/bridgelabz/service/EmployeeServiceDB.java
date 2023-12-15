@@ -11,6 +11,19 @@ import java.util.List;
 public class EmployeeServiceDB {
 
     private PreparedStatement employeeDataStatement;
+    private static EmployeeServiceDB single_instance = null;
+
+    private EmployeeServiceDB(){}
+
+    public static synchronized EmployeeServiceDB getInstance()
+    {
+        if (single_instance == null)
+            single_instance = new EmployeeServiceDB();
+
+        return single_instance;
+    }
+
+
 
     /**
      * Method to establish connection with mysql
