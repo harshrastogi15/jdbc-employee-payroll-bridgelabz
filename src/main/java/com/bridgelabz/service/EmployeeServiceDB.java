@@ -2,10 +2,12 @@ package com.bridgelabz.service;
 
 import com.bridgelabz.entity.Employee;
 import com.bridgelabz.exception.DatabaseException;
+import com.sun.source.tree.WhileLoopTree;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class EmployeeServiceDB {
@@ -139,6 +141,33 @@ public class EmployeeServiceDB {
             return employeeDataList;
         } catch (SQLException e) {
             throw new DatabaseException("Read Data In Range : " + e.getMessage());
+        }
+    }
+
+
+    /*
+     * Method to find min, max, average, count
+     * based on gender
+     */
+    public HashMap<String, Integer> readDataMinMaxAverage(String gender) throws DatabaseException {
+        try {
+            String sqlQuery = String.format("Select SUM(salary) as SUM,AVG(salary) as AVG,MAX(salary) as " +
+                                            "MAX,MIN(salary) as MIN,COUNT(*) AS COUNT FROM employee_payroll " +
+                                            "Where gender='%s' Group By gender;", gender);
+            Connection connection = this.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(sqlQuery);
+            HashMap<String,Integer> data = new HashMap<>();
+            while(result.next()){
+                data.put("SUM",result.getInt("SUM"));
+                data.put("AVG",result.getInt("AVG"));
+                data.put("MAX",result.getInt("MAX"));
+                data.put("MIN",result.getInt("MIN"));
+                data.put("COUNT",result.getInt("COUNT"));
+            }
+            return data;
+        }catch (SQLException e){
+            throw new DatabaseException(e.getMessage());
         }
     }
 

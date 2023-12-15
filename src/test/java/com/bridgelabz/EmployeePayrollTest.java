@@ -7,7 +7,10 @@ import com.bridgelabz.service.EmployeeServiceDB;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class EmployeePayrollTest {
@@ -54,6 +57,19 @@ public class EmployeePayrollTest {
             EmployeePayrollService employeePayrollService = new EmployeePayrollService();
             List<Employee> employeeDataList = employeePayrollService.readFromDataBaseWithParticularRange(EmployeePayrollService.IOService.DB_IO,"2022-01-01","2024-01-01");
             Assert.assertEquals(1,employeeDataList.size());
+        }catch (DatabaseException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    @Test
+    public void findSumAverageMinMax_Number_MaleFemaleEmployees(){
+        try{
+            EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+            HashMap<String,Integer> data = employeePayrollService.getMinMaxAverageSum("F");
+            System.out.println(data);
+            Assert.assertEquals((Integer) 200000,data.get("MAX"));
         }catch (DatabaseException e){
             System.out.println(e.getMessage());
         }

@@ -3,9 +3,11 @@ package com.bridgelabz.service;
 import com.bridgelabz.entity.Employee;
 import com.bridgelabz.exception.DatabaseException;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class EmployeePayrollService {
+
     public enum IOService{CONSOLE_IO, FILE_IO, DB_IO, REST_IO;}
     EmployeeServiceDB employeeServiceDb;
 
@@ -43,6 +45,12 @@ public class EmployeePayrollService {
         return employeeWithRange;
     }
 
+
+    public HashMap<String, Integer> getMinMaxAverageSum(String gender) throws DatabaseException {
+        HashMap<String,Integer> data = null;
+        data = employeeServiceDb.readDataMinMaxAverage(gender);
+        return data;
+    }
 
 
     private Employee getEmployeePayrollData(String name) {
