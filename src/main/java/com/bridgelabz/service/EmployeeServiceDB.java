@@ -159,12 +159,19 @@ public class EmployeeServiceDB {
 
 
     public Employee addEmployeeToDB(String name, int salary, LocalDate date, String gender) throws DatabaseException{
+        Connection connection = null;
+        Employee employee = null;
+        try {
+            connection = this.getConnection();
+            connection.setAutoCommit(false);
+        } catch (SQLException e) {
+            throw new DatabaseException("Error in stable in connection in addEmployee Method: " + e.getMessage());
+        }
+
         try {
             int employeeID = -1;
-            Employee employee = null;
             String sql = String.format("INSERT INTO employee_payroll (name,salary,startDate,gender) values " +
                                         "('%s','%s','%s','%s');",name,salary,Date.valueOf(date),gender);
-            Connection connection = this.getConnection();
             Statement statement = connection.createStatement();
             int rowAffected = statement.executeUpdate(sql,statement.RETURN_GENERATED_KEYS);
             if(rowAffected == 1){
@@ -175,11 +182,29 @@ public class EmployeeServiceDB {
             if(insertIntoPayrollDetails(salary,employeeID,connection) == 1){
                 employee = new Employee(employeeID,name,salary,date);
             }
-            connection.close();
-            return employee;
         }catch (SQLException e) {
-            throw new DatabaseException("Add Employee To DB Error : " + e.getMessage());
+            try {
+                connection.rollback();
+                return employee;
+            } catch (SQLException ex) {
+                throw  new DatabaseException("Error in rollback in addEmployeeToDB:  " + e.getMessage());
+            }
         }
+
+        try {
+            connection.commit();
+        } catch (SQLException e) {
+            throw  new DatabaseException("Error in commit in addEmployeeToDB:  " + e.getMessage());
+        }finally {
+            if(connection != null){
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return employee;
     }
 
     /**
@@ -207,6 +232,12 @@ public class EmployeeServiceDB {
             statement.close();
             return rowAffected;
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw  new DatabaseException("Error in rollback in insertIntoPayrollDetails:  " + e.getMessage());
+
+            }
             throw new DatabaseException("Insert INTO Payroll Error: " + e.getMessage());
         }
     }
