@@ -77,17 +77,20 @@ public class EmployeePayrollTest {
     }
 
     @Test
-    public void giverNewEmployee_Added_ShouldSyncDB(){
+    public void givenNewEmployee_Added_ShouldSyncDB(){
         try {
             EmployeePayrollService employeePayrollService = new EmployeePayrollService();
             List<Employee> employeeDataList = employeePayrollService.readFromDataBase(EmployeePayrollService.IOService.DB_IO);
-            employeePayrollService.addEmployee("Mark",500000, LocalDate.now(),"M");
+            employeePayrollService.addEmployee("Palak",5390000, LocalDate.now(),"F");
             boolean result = employeePayrollService.checkEmployeePayrollIsSync("Mark");
             Assert.assertTrue(result);
         } catch (DatabaseException e) {
             throw new RuntimeException(e);
         }
     }
+
+
+
 
 
 }

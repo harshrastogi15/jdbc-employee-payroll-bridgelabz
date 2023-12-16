@@ -2,7 +2,6 @@ package com.bridgelabz.service;
 
 import com.bridgelabz.entity.Employee;
 import com.bridgelabz.exception.DatabaseException;
-import com.sun.source.tree.WhileLoopTree;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -107,21 +106,7 @@ public class EmployeeServiceDB {
         }
     }
 
-    private Connection getConnection() throws DatabaseException {
 
-        try {
-            System.out.println("Connecting to Database");
-            String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false&allowPublicKeyRetrieval=true";
-            String user = "root";
-            String password = "harsh";
-            Connection connection;
-            connection = DriverManager.getConnection(jdbcURL,user,password);
-            System.out.println("Connected to Database : " + jdbcURL);
-            return connection;
-        } catch (SQLException e) {
-            throw new DatabaseException("Error in connecting Database: " + e.getMessage());
-        }
-    }
 
 
     /*
@@ -165,6 +150,7 @@ public class EmployeeServiceDB {
                 data.put("MIN",result.getInt("MIN"));
                 data.put("COUNT",result.getInt("COUNT"));
             }
+            connection.close();
             return data;
         }catch (SQLException e){
             throw new DatabaseException(e.getMessage());
@@ -185,10 +171,43 @@ public class EmployeeServiceDB {
                 ResultSet resultSet = statement.getGeneratedKeys();
                 if(resultSet.next()) employeeID = resultSet.getInt(1);
             }
-            employee = new Employee(employeeID,name,salary,date);
+            statement.close();
+            if(insertIntoPayrollDetails(salary,employeeID,connection) == 1){
+                employee = new Employee(employeeID,name,salary,date);
+            }
+            connection.close();
             return employee;
         }catch (SQLException e) {
             throw new DatabaseException("Add Employee To DB Error : " + e.getMessage());
+        }
+    }
+
+    /**
+     * Insert data into payroll details table
+     *
+     * @param salary
+     * @param employeeId
+     * @param connection
+     * @return
+     * @throws DatabaseException
+     */
+
+    private int insertIntoPayrollDetails(int salary, int employeeId, Connection connection) throws DatabaseException {
+        try {
+
+            double deductions = salary * 0.2;
+            double taxablepay = salary - deductions;
+            double tax = taxablepay * 0.1;
+            double netpay = salary - tax;
+            String sql = String.format("INSERT INTO payroll_details (employee_id,basic_pay,deductions," +
+                            "taxable_pay,tax,net_pay) Values (%s,%s,%s,%s,%s,%s)",employeeId,
+                    salary,deductions,taxablepay,tax,netpay);
+            Statement statement = connection.createStatement();
+            int rowAffected = statement.executeUpdate(sql);
+            statement.close();
+            return rowAffected;
+        } catch (SQLException e) {
+            throw new DatabaseException("Insert INTO Payroll Error: " + e.getMessage());
         }
     }
 
@@ -213,6 +232,22 @@ public class EmployeeServiceDB {
 
         }
         return employeeDataList;
+    }
+
+    private Connection getConnection() throws DatabaseException {
+
+        try {
+            System.out.println("Connecting to Database");
+            String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false&allowPublicKeyRetrieval=true";
+            String user = "root";
+            String password = "harsh";
+            Connection connection;
+            connection = DriverManager.getConnection(jdbcURL,user,password);
+            System.out.println("Connected to Database : " + jdbcURL);
+            return connection;
+        } catch (SQLException e) {
+            throw new DatabaseException("Error in connecting Database: " + e.getMessage());
+        }
     }
 
 }
